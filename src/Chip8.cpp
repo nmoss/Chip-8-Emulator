@@ -1,6 +1,10 @@
-#include <cstdio>
+#include <iostream>
+#include "Memory.h"
 
 int main(int argc, char** argv){
-    FILE *fp;
+
+    std::cout << argv[1] << std::endl;
+    Memory mem(argv[1]);
+
     return 0;
 }

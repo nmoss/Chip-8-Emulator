@@ -1,6 +1,9 @@
 #ifndef __MEMORY_H__
 #define __MEMORY_H__
 
+#include <cstring>
+#include <cstdio>
+
 // The program memory for Chip-8 virtual machine
 // The Chip-8 language can access 4KB of RAM from addresses 0x000 to 0xFFF
 // The first 512 bytes were reserved for the interpreter and are not used
@@ -19,6 +22,8 @@
 class Memory {
     public:
         /* Fontset */
+        //TODO perhaps add an array for graphics here which is then sent to handler
+        //TODO maybe move this to graphics
         const unsigned char fontset[80] = {
             0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
             0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -42,7 +47,9 @@ class Memory {
         unsigned short sp;
         unsigned short stack[16];
         unsigned char memory[4096];
-        Memory();
+        unsigned char V[0x10];
+        unsigned char gfx[64 * 32];
+        Memory(char* program);
         ~Memory();
 
 
