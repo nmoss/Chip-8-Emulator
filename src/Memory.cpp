@@ -1,5 +1,4 @@
 #include "Memory.h"
-#include "Interpreter.h"
 
 Memory::Memory(char* program){
     // Load program into memory
