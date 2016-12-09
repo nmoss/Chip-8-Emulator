@@ -22,8 +22,6 @@
 class Memory {
     public:
         /* Fontset */
-        //TODO perhaps add an array for graphics here which is then sent to handler
-        //TODO maybe move this to graphics
         const unsigned char fontset[80] = {
             0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
             0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -49,6 +47,9 @@ class Memory {
         unsigned char memory[4096];
         unsigned char V[0x10];
         unsigned char gfx[64 * 32];
+        unsigned char key[0x10];
+        unsigned char delay_timer;
+        unsigned char sound_timer;
         Memory(char* program);
         ~Memory();
 

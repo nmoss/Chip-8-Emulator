@@ -1,6 +1,7 @@
 #ifndef __Interpreter_H__
 #define __Interpreter_H__
 
+#include <cstdlib>
 #include "Memory.h"
 // Decodes and executes instructions fetched from memory
 // Fetches the opcode which represents the current instruction
@@ -15,6 +16,7 @@ class Interpreter {
 
     public:
         Memory* mem;
+        bool drawFlag;
         Interpreter(Memory* m);
         ~Interpreter();
         //Emulates one cycle by executing one instruction

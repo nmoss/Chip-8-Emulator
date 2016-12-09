@@ -2,6 +2,7 @@
 #include <cstdio>
 Interpreter::Interpreter(Memory* m){
     mem = m;
+    drawFlag = false;
 }
 
 Interpreter::~Interpreter(){}
@@ -165,9 +166,113 @@ void Interpreter::execute(){
         case 0xB000:
             mem->pc = (opcode & 0x0FFF) + mem->V[0];
         break;
+        // Sets Vx = kk AND random bytes
+        case 0xC000:
+            mem->V[(opcode & 0x0F00) >> 8] = (opcode & 0x00FF) & rand();
+            mem->pc += 2;
+        break;
+        // Draws a sprite at coordinate VX,VY of height N
+        case 0xD000: {
+            unsigned short x = mem->V[(opcode & 0x0F00) >> 8];
+            unsigned short y = mem->V[(opcode & 0x00F0) >> 4];
+            unsigned short height = opcode & 0x000F;
+            mem->V[0xF] = 0; // Collision detection
+            for(int yline = 0; yline < height; yline++){
+                unsigned short pixel = mem->memory[mem->I + yline];
+                for(int xline = 0; xline < 8; xline++){
+                    //Check to see if the pixel is already 1
+                    if ((pixel & (0x80 >> xline)) != 0) {
+                        // Collision detection
+                        if(mem->gfx[(x + xline + ((y + yline) * 64))] == 1){
+                            mem->V[0xF] = 1;
+                        } // if
+                        mem->gfx[x + xline + ((y + yline) * 64)] ^= 1;
+                    }//if
+                }//for
+            }//for
+            drawFlag = true;
+            mem->pc += 2;
+        }
+        break;
+        // Checks to see if a key has been pressed
+        case 0xE000:
+            switch(opcode & 0x00FF){
+                // Skips the next instruction if the key Vx has been pressed
+                case 0x009E:
+                    if(mem->key[mem->V[(opcode & 0x0F00) >> 8]] != 0){
+                        mem->pc += 4;
+                    } else {
+                        mem->pc += 2;
+                    }
+                break;
+                // Skips the next instruction if the key Vx has not been pressed
+                case 0x00A1:
+                    if(mem->key[mem->V[(opcode & 0x0F00) >> 8]] == 0){
+                        mem->pc += 4;
+                    } else {
+                        mem->pc += 2;
+                    }
+                break;
+            }
+        break;
+        case 0xF000:
+            switch(opcode & 0x00FF){
+                // Sets Vx = delay timer value
+                case 0x0007:
+                    mem->V[(opcode & 0x0F00) >> 8] = mem->delay_timer;
+                    mem->pc += 2;
+                break;
+                // Waits for a key press and sets that key to true
+                // TODO query the keyboard handler here
+                case 0x000A:
+                //TODO
+                break;
+                // Sets the delay timer = Vx
+                case 0x0015:
+                    mem->delay_timer = mem->V[(opcode & 0x0F00) >> 8];
+                    mem->pc += 2;
+                break;
+                // Sets the sound timer = Vx
+                case 0x0018:
+                    mem->sound_timer = mem->V[(opcode & 0x0F00) >> 8];
+                    mem->pc += 2;
+                break;
+                // Sets I = I + Vx
+                case 0x001E:
+                    mem->I += mem->V[(opcode & 0x0F00) >> 8];
+                    mem->pc += 2;
+                break;
+                // Sets I = location of the hexadecimal sprite in Vx
+                case 0x0029:
+                    mem->I = mem->V[(opcode & 0x0F00) >> 8] * 5;
+                    mem->pc += 2;
+                break;
+                // Stores the binary encoded representation of Vx in I, I+1, I+2
+                case 0x033:
+                    mem->memory[mem->I]     = mem->V[(opcode & 0x0F00) >> 8] / 100;
+                    mem->memory[mem->I + 1] = (mem->V[(opcode & 0x0F00) >> 8] / 10) % 10;
+                    mem->memory[mem->I + 2] = (mem->V[(opcode & 0x0F00) >> 8] % 100) % 10;
+                    mem->pc += 2;
+                break;
+                // Stores registers V0 to Vx in memory location I
+                case 0x055:
+                    for(int i = 0; i < ((opcode & 0x0F00) >> 8); i++){
+                        mem->memory[mem->I+i] = mem->V[i];
+                    }//for
+                    mem->pc +=2;
+                break;
+                // Loads registers V0 to Vx from memory location I
+                case 0x065:
+                    for(int i = 0; i < ((opcode & 0x0F00) >> 8); i++){
+                        mem->V[i] = mem->memory[mem->I+i];
+                    }//for
+                    mem->pc +=2;
+                break;
+            } // switch
+        break;
         default:
             printf("%s\n", "Unrecognized Instruction:");
             printf("%x\n", opcode);
         break;
-    }
+    } // switch
 }

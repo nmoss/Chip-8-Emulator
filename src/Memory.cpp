@@ -18,6 +18,8 @@ Memory::Memory(char* program){
     pc = 0x200;
     sp = 0;
     I = 0;
+    delay_timer = 0;
+    sound_timer = 0;
 }
 
 Memory::~Memory(){}
