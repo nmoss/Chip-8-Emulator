@@ -2,6 +2,9 @@
 
 Memory::Memory(char* program){
     // Load program into memory
+    memset(memory, 0, sizeof(memory));
+    memset(gfx, 0, sizeof(gfx));
+
     FILE* fp;
     fp = fopen(program, "rb");
     fread(memory+0x200, 1, 4096-0x200, fp);

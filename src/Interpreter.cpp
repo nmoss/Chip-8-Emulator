@@ -13,9 +13,11 @@ void Interpreter::execute(){
     // must get PC and PC+1 and merge them to get the actual opcode
     unsigned short opcode = mem->memory[mem->pc] << 8 | mem->memory[mem->pc+1];
 
+    /*
     printf("%s\n", "OP:");
     printf("%x\n", opcode);
     printf("%x\n", opcode & 0xF000);
+    */
     //mem->pc += 2;
     // switch on the value of the first 4 bits F = 1111
     switch(opcode & 0xF000){
@@ -23,7 +25,9 @@ void Interpreter::execute(){
             switch(opcode & 0x00FF){
                 // Clear the screen
                 case 0x00E0:
-                    printf("%s\n", "Clear the screen.");
+                    //printf("%s\n", "Clear the screen.");
+                    memset(mem->gfx, 0, sizeof(mem->gfx));
+                    mem->pc += 2;
                 break;
                 // Return from subroutine
                 // Sets the program counter = to top of the stack
@@ -226,6 +230,7 @@ void Interpreter::execute(){
                 // TODO query the keyboard handler here
                 case 0x000A:
                 //TODO
+                    mem->pc += 2;
                 break;
                 // Sets the delay timer = Vx
                 case 0x0015:
@@ -271,8 +276,18 @@ void Interpreter::execute(){
             } // switch
         break;
         default:
-            printf("%s\n", "Unrecognized Instruction:");
-            printf("%x\n", opcode);
+            //printf("%s\n", "Unrecognized Instruction:");
+            //printf("%x\n", opcode);
         break;
     } // switch
+
+    if(mem->sound_timer > 0){
+        //if(mem->sound_timer == 1)
+            //int x = 1;
+            //printf("%s\n", "BEEP");
+        mem->sound_timer--;
+    }
+    if(mem->delay_timer > 0){
+        mem->delay_timer--;
+    }
 }
