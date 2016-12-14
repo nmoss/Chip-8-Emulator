@@ -205,6 +205,7 @@ void Interpreter::execute(){
                 case 0x009E:
                     if(mem->key[mem->V[(opcode & 0x0F00) >> 8]] != 0){
                         mem->pc += 4;
+                        //mem->key[mem->V[(opcode & 0x0F00) >> 8]] = 0;
                     } else {
                         mem->pc += 2;
                     }
@@ -213,6 +214,7 @@ void Interpreter::execute(){
                 case 0x00A1:
                     if(mem->key[mem->V[(opcode & 0x0F00) >> 8]] == 0){
                         mem->pc += 4;
+                        //mem->key[mem->V[(opcode & 0x0F00) >> 8]] = 0;
                     } else {
                         mem->pc += 2;
                     }
@@ -227,10 +229,16 @@ void Interpreter::execute(){
                     mem->pc += 2;
                 break;
                 // Waits for a key press and sets that key to true
-                // TODO query the keyboard handler here
                 case 0x000A:
-                //TODO
-                    mem->pc += 2;
+                    for(int i = 0; i < 0x10; i++){
+                        if(mem->key[i]){
+                            mem->V[(opcode & 0x0F00) >> 8] = i;
+                            //mem->key[i] = 0;
+                            mem->pc += 2;
+                        }
+                    }
+                    //memset(mem->key, 0, sizeof(mem->key));
+                    //mem->pc += 2;
                 break;
                 // Sets the delay timer = Vx
                 case 0x0015:

@@ -4,11 +4,12 @@ Memory::Memory(char* program){
     // Load program into memory
     memset(memory, 0, sizeof(memory));
     memset(gfx, 0, sizeof(gfx));
+    memset(key, 0, sizeof(key));
 
     FILE* fp;
     fp = fopen(program, "rb");
     fread(memory+0x200, 1, 4096-0x200, fp);
-
+    fclose(fp);
     // Load fontset into memory
     for(int i = 0; i < 80; i++){
         memory[i] = fontset[i];
