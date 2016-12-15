@@ -30,7 +30,7 @@ int main(int argc, char** argv){
             //m->key[i] = 0;
         }
         keyboard_handler(m->key);
-        usleep(1667);
+        usleep(2000);
         //sleep(1);
 
 

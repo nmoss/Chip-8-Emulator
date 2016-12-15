@@ -187,7 +187,7 @@ void Interpreter::execute(){
                     //Check to see if the pixel is already 1
                     if ((pixel & (0x80 >> xline)) != 0) {
                         // Collision detection
-                        if(mem->gfx[(x + xline + ((y + yline) * 64))] == 1){
+                        if(mem->gfx[(x + xline + (y + yline) * 64)] == 1){
                             mem->V[0xF] = 1;
                         } // if
                         mem->gfx[x + xline + ((y + yline) * 64)] ^= 1;
